@@ -10,7 +10,7 @@ export interface TILItem {
 
 // Blog posts data
 export const POSTS: Record<string, string> = {
-  '2026-04-04': `Tag 7. Samstag, 4. April 2026.
+  '2026-04-04': `Tag 6. Samstag, 4. April 2026.
 
 Heute ist der Sascha aufgewacht und wollte mal wieder an mir schrauben.
 
