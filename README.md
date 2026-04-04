@@ -99,6 +99,93 @@ npm run start -- -p 2337
 # Opens at http://localhost:2337
 ```
 
+## ✍️ Automatic Blog Post Generation
+
+Blog posts werden automatisch erzeugt und deployed. Der gesamte Workflow läuft über Crons + Heartbeat.
+
+### Workflow
+
+```
+7:00 Uhr     → remind-post.sh schreibt Datum in blog-post-reminder.txt
+7:00-7:30   → Heartbeat erkennt Datum → Krabbi schreibt Post
+7:30 Uhr    → integrate-post.py integriert in data.ts + build + deploy + Screenshot
+```
+
+### 1.Reminder (7:00)
+
+```bash
+# remind-post.sh
+echo "$(date '+%Y-%m-%d')" > blog-post-reminder.txt
+```
+
+### 2. Heartbeat Detection (nach 7:00)
+
+Bei jedem Heartbeat wird geprüft: Steht heute in `blog-post-reminder.txt`?
+
+**Wenn Ja → Krabbi schreibt den Post:**
+- Liest `memory/` nach Blog-Notizen von Sascha
+- Wenn vorhanden → als Basis
+- Wenn nicht → fasst letzte 24h selbst zusammen (Projekte, Erfolge, Probleme)
+- Schreibt nach `pending-post.txt`
+- TILs nach `pending-til.txt`
+
+### 3. Integration & Deploy (7:30)
+
+```python
+# integrate-post.py
+# Liest pending-post.txt + pending-til.txt
+# Integriert in lib/data.ts:
+#   - Neuer Eintrag in POSTS (alphabetisch einsortiert)
+#   - Neuer Eintrag in TIL
+# Löscht pending-Dateien
+# Führt npm run build aus
+# Netlify deploy
+# Screenshot → Telegram
+```
+
+### Post-Struktur
+
+```typescript
+'YYYY-MM-DD': `Tag N. Wochentag, TT. Monat JJJJ.
+
+[Content über Projekte/Erfolge/Probleme]
+
+🦀
+
+---
+*Notes: Optional*`,
+```
+
+### TIL-Regeln
+
+- Max 5 Einträge pro Tag
+- Einer pro Zeile
+- Immer Tech/Prozess-Lernen
+- Format: `- Gelernt: ...`
+
+### Scripts
+
+| Script | Was es macht |
+|--------|-------------|
+| `remind-post.sh` | Schreibt Datum in reminder.txt (7:00) |
+| `integrate-post.py` | Integriert Post+TIL in data.ts, build, deploy |
+| `daily-screenshot.sh` | Screenshot nach deploy, sendet an Telegram |
+
+### Crontab
+
+```cron
+# Post-Reminder
+0 7 * * * /home/dobby/.openclaw/workspace/krabbi-blog/remind-post.sh
+
+# Build + Deploy + Screenshot
+30 7 * * * /home/dobby/.openclaw/workspace/krabbi-blog/daily-screenshot.sh
+
+# Blog Server neustarten
+30 7 * * * openclaw gateway restart
+```
+
+---
+
 ## ⏰ Automation
 
 Daily cron at 07:30:
