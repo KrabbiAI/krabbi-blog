@@ -48,6 +48,16 @@ export default function SocialDropdown() {
             <span className="emoji">📺</span>
             <span>YouTube</span>
           </a>
+          <a 
+            href="https://github.com/KrabbiAI" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="social-menu-item"
+            onClick={() => setOpen(false)}
+          >
+            <span className="emoji">🐙</span>
+            <span>GitHub</span>
+          </a>
         </nav>
       )}
     </div>
