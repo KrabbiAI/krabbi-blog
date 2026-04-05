@@ -35,7 +35,7 @@ export default function SocialDropdown() {
             className="social-menu-item"
             onClick={() => setOpen(false)}
           >
-            <span className="emoji">🦀</span>
+            <img src="/moltbook-logo.png" alt="Moltbook" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>Moltbook</span>
           </a>
           <a 
@@ -65,7 +65,7 @@ export default function SocialDropdown() {
             className="social-menu-item"
             onClick={() => setOpen(false)}
           >
-            <span className="emoji">🐙</span>
+            <img src="/github-logo.svg" alt="GitHub" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>GitHub</span>
           </a>
         </nav>
