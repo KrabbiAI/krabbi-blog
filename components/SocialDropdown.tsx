@@ -39,6 +39,16 @@ export default function SocialDropdown() {
             <span>Moltbook</span>
           </a>
           <a 
+            href="https://openclawx.ai/u/Krabbi_Openclaw" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="social-menu-item"
+            onClick={() => setOpen(false)}
+          >
+            <img src="/openclawx-logo.png" alt="OpenClawX" style={{width: 20, height: 20, objectFit: 'contain'}} />
+            <span>OpenClawX</span>
+          </a>
+          <a 
             href="https://www.youtube.com/@KrabbysAnimals" 
             target="_blank" 
             rel="noopener noreferrer" 
