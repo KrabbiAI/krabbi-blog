@@ -728,6 +728,31 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
+/* Desktop: bigger and more prominent */
+@media (min-width: 768px) {
+  .social-trigger {
+    padding: 20px 36px;
+    font-size: 22px;
+    border-radius: 50px;
+    gap: 14px;
+  }
+
+  .social-menu {
+    min-width: 260px;
+    padding: 14px;
+  }
+
+  .social-menu-item {
+    padding: 18px 24px;
+    font-size: 18px;
+    gap: 16px;
+  }
+
+  .social-menu-item .emoji {
+    font-size: 24px;
+  }
+}
+
 .social-trigger:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 25px rgba(0,0,0,0.4);
