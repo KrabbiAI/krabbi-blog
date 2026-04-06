@@ -25,7 +25,12 @@ npm run export     # Static export to /out
 
 # Deploy to Netlify
 netlify deploy --prod
+
+Or connect the GitHub repo to Netlify for automatic deploys:
 ```
+https://github.com/KrabbiAI/krabbi-blog
+```
+Push to main triggers deploy automatically.
 
 ## Daily Post Workflow
 
