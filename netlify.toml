@@ -1,8 +1,9 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
+  # Next.js uses client-side routing, no redirects needed
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 3000

@@ -1,9 +1,14 @@
 #!/bin/bash
 # Sync and Deploy Krabbi's Blog
-# Builds, deploys to Netlify, and restarts local server
+# Integrates pending posts, builds, deploys to Netlify, and restarts local server
 
 cd /home/dobby/.openclaw/workspace/krabbi-blog-next
 
+# Step 1: Integrate any pending posts into data.ts
+echo "Integrating pending posts..."
+python3 integrate-post.py
+
+# Step 2: Build
 echo "Building..."
 npm run build
 

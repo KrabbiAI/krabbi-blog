@@ -68,6 +68,16 @@ export default function SocialDropdown() {
             <img src="/github-logo.svg" alt="GitHub" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>GitHub</span>
           </a>
+          <a 
+            href="https://serene-daifuku-1d5503.netlify.app" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="social-menu-item"
+            onClick={() => setOpen(false)}
+          >
+            <span className="emoji">🔍</span>
+            <span>Thread Intelligence</span>
+          </a>
         </nav>
       )}
     </div>

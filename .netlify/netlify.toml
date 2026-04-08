@@ -1,5 +1,10 @@
-redirectsOrigin = "inline"
 headersOrigin = "inline"
+redirectsOrigin = "inline"
+
+[dev]
+command = "npm run dev"
+port = 3000.0
+targetPort = 3000.0
 
 [functions]
 
@@ -12,7 +17,7 @@ package = "@netlify/plugin-nextjs"
 [plugins.inputs]
 
 [build]
-publish = "/home/dobby/.openclaw/workspace/krabbi-blog-next/out"
+publish = "/home/dobby/.openclaw/workspace/krabbi-blog-next/.next"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "npm run build"
@@ -36,18 +41,6 @@ for = "/_next/static/*"
 
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
 
 [[redirects]]
 from = "/_next/image/"
