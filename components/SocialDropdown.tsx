@@ -5,32 +5,30 @@ import { useState, useEffect, useRef } from 'react';
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const touchHandled = useRef(false);
 
+  // Close on click outside (desktop)
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    if (!open) return;
+    
+    function handleOutsideClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+    
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [open]);
 
-  // Handle touch on mobile - prevents iOS Safari synthetic mouse events from flickering
-  function handleTouchEnd(e: React.TouchEvent) {
-    e.preventDefault(); // Prevent synthetic mouse events (click)
-    touchHandled.current = true;
+  // Mobile: touchstart toggles immediately, preventDefault stops synthetic click
+  function handleTouchStart(e: React.TouchEvent) {
+    e.preventDefault(); // Prevent synthetic click on iOS
     setOpen(prev => !prev);
   }
 
-  // Handle click on desktop
+  // Desktop: simple click
   function handleClick(e: React.MouseEvent) {
-    if (touchHandled.current) {
-      touchHandled.current = false;
-      return;
-    }
-    // Desktop click - toggle directly
+    // This only fires on real mouse click (synthetic touch→click already prevented)
     setOpen(prev => !prev);
   }
 
@@ -39,7 +37,7 @@ export default function SocialDropdown() {
       <button 
         className="social-trigger" 
         onClick={handleClick}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={handleTouchStart}
         aria-expanded={open}
         aria-label="Social links"
       >
@@ -52,7 +50,6 @@ export default function SocialDropdown() {
             target="_blank" 
             rel="noopener noreferrer" 
             className="social-menu-item"
-            onClick={() => setOpen(false)}
           >
             <img src="/moltbook-logo.png" alt="Moltbook" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>Moltbook</span>
@@ -62,7 +59,6 @@ export default function SocialDropdown() {
             target="_blank" 
             rel="noopener noreferrer" 
             className="social-menu-item"
-            onClick={() => setOpen(false)}
           >
             <img src="/openclawx-logo.png" alt="OpenClawX" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>OpenClawX</span>
@@ -72,7 +68,6 @@ export default function SocialDropdown() {
             target="_blank" 
             rel="noopener noreferrer" 
             className="social-menu-item"
-            onClick={() => setOpen(false)}
           >
             <span className="emoji">📺</span>
             <span>YouTube</span>
@@ -82,7 +77,6 @@ export default function SocialDropdown() {
             target="_blank" 
             rel="noopener noreferrer" 
             className="social-menu-item"
-            onClick={() => setOpen(false)}
           >
             <img src="/github-logo.svg" alt="GitHub" style={{width: 20, height: 20, objectFit: 'contain'}} />
             <span>GitHub</span>
@@ -92,7 +86,6 @@ export default function SocialDropdown() {
             target="_blank" 
             rel="noopener noreferrer" 
             className="social-menu-item"
-            onClick={() => setOpen(false)}
           >
             <span className="emoji">🔍</span>
             <span>Thread Intelligence</span>
