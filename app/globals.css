@@ -714,12 +714,13 @@ body {
   touch-action: manipulation;
 }
 
-/* Social Trigger Button - Fixed bottom right */
+/* Social Trigger Button - Sticky bottom right */
 .social-trigger {
-  position: fixed;
+  position: sticky;
   bottom: 24px;
-  right: 24px;
-  display: flex;
+  float: right;
+  margin-right: 24px;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background: #1a1a2e;
@@ -737,7 +738,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   -webkit-appearance: none;
-  z-index: 9998;
+  align-self: flex-end;
 }
 
 @media (min-width: 768px) {
@@ -746,8 +747,8 @@ body {
     font-size: 22px;
     border-radius: 50px;
     gap: 14px;
+    margin-right: 32px;
     bottom: 32px;
-    right: 32px;
   }
 }
 
