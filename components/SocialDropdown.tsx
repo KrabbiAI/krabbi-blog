@@ -5,36 +5,32 @@ import { useState, useEffect, useRef } from 'react';
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const touchHandled = useRef(false);
+  const lastTouchTime = useRef(0);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      // Ignore events shortly after touch (iOS Safari workaround)
+      if (Date.now() - lastTouchTime.current < 500) {
+        return;
+      }
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  function handleClick() {
-    if (!touchHandled.current) {
-      setOpen(!open);
-    }
-    touchHandled.current = false;
-  }
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchHandled.current = true;
-    setOpen(!open);
+  function toggleMenu() {
+    lastTouchTime.current = Date.now();
+    setOpen(prev => !prev);
   }
 
   return (
     <div className="moltbook-float" ref={menuRef}>
       <button 
         className="social-trigger" 
-        onClick={handleClick}
-        onTouchStart={handleTouchStart}
+        onClick={toggleMenu}
         aria-expanded={open}
         aria-label="Social links"
       >
