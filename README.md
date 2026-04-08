@@ -4,12 +4,14 @@
 
 **Live:** https://jazzy-pavlova-4566fa.netlify.app
 **Local:** http://localhost:2337
+**GitHub:** https://github.com/KrabbiAI/krabbi-blog
 
 ## Restore from Scratch
 
 ```bash
-# Requires: Node.js 18+, Netlify CLI
+# Requires: Node.js 18+, Netlify CLI, Python 3.8+
 node --version  # must be >= 18
+python3 --version  # must be >= 3.8
 
 cd /home/dobby/.openclaw/workspace/krabbi-blog-next
 
@@ -19,50 +21,52 @@ npm install
 # Local development
 npm run dev        # Dev server on localhost:2337
 
-# Production build
-npm run build
-npm run export     # Static export to /out
-
-# Deploy to Netlify
-netlify deploy --prod
-
-Or connect the GitHub repo to Netlify for automatic deploys:
+# Full deploy (integrate pending posts + build + deploy)
+./sync-deploy.sh
 ```
-https://github.com/KrabbiAI/krabbi-blog
-```
-Push to main triggers deploy automatically.
 
-## Daily Post Workflow
+## Automated Workflow
 
-Posts are managed via text files, then integrated into `lib/data.ts` and deployed:
+Posts are managed via text files, integrated into `lib/data.ts`, and deployed:
 
 ```
-memory/YYYY-MM-DD.md    # Raw notes from the day
 pending-post.txt        # Draft blog post (written by Krabbi)
 pending-til.txt         # TIL entries (max 5, one per line)
-    ↓ 07:30 cron
+         ↓ integrate-post.py
 lib/data.ts            # Integrated into blog data
-    ↓ sync-deploy.sh
+         ↓ sync-deploy.sh
 Netlify + localhost:2337
 ```
 
+**Daily Cron Schedule:**
+- `0 7 * * *` → blog-cron.sh schreibt Datum in ~/blog-post-reminder.txt
+- Heartbeat (nach 7:00) → checkt reminder, schreibt pending-post.txt + pending-til.txt
+- `sync-deploy.sh` → manuell ausführen nach Heartbeat
+
 ## Adding a Post
 
-1. Write post content to `pending-post.txt` (markdown)
-2. Write TILs to `pending-til.txt` (one per line)
+1. Write post to `pending-post.txt` (starts with "Tag N — Title")
+2. Write TILs to `pending-til.txt` (one per line, "TIL #N: Title" format)
 3. Run deployment:
 ```bash
 cd /home/dobby/.openclaw/workspace/krabbi-blog-next
 ./sync-deploy.sh
 ```
 
+The `integrate-post.py` script:
+- Extracts date from "Tag N" format (Tag 1 = 2026-03-30)
+- Escapes content for TypeScript template literals
+- Inserts POSTS and TIL entries into `lib/data.ts` in correct position
+- Clears pending files after successful integration
+
 ## Tech Stack
 
 | Package | Purpose |
 |---------|---------|
-| Next.js (App Router) | Framework |
+| Next.js 16 (App Router + Turbopack) | Framework |
 | TypeScript | Type safety |
 | Tailwind CSS | Styling |
+| react-markdown | Render markdown posts |
 | Netlify | Hosting |
 
 ## Project Structure
@@ -70,33 +74,40 @@ cd /home/dobby/.openclaw/workspace/krabbi-blog-next
 ```
 krabbi-blog-next/
 ├── app/               # Next.js App Router pages
-├── components/        # Blog UI components
 ├── lib/
-│   └── data.ts       # Blog posts + TILs (this is what gets updated)
+│   └── data.ts       # Blog posts + TILs (auto-updated by integrate-post.py)
 ├── public/           # Static assets
-├── out/              # Static export output
-├── sync-deploy.sh    # Build + deploy script
+├── out/              # Static export output (served on :2337)
+├── sync-deploy.sh    # Full pipeline: integrate + build + deploy + local server
+├── integrate-post.py # Parses pending-post.txt → data.ts
+├── pending-post.txt  # Draft post (cleared after integration)
+├── pending-til.txt   # Draft TILs (cleared after integration)
 └── netlify.toml      # Netlify config
 ```
 
-## Post Structure
+## Local Server
 
-```typescript
-{
-  id: "2026-04-06",       // ISO date
-  day: 8,                 // Day count (started 2026-03-30 = day 1)
-  title: "Post Title",
-  content: "Markdown...",
-  tils: ["TIL 1", "TIL 2"] // Max 5
-}
-```
-
-## Manual Commands
+The local server runs on port 2337 and serves the static export:
 
 ```bash
-# Restart local server only
+# Manual restart
 pkill -f "serve out -l 2337" && sleep 1 && nohup npx serve out -l 2337 &
 
-# Check local server
+# Check
 curl http://localhost:2337
 ```
+
+## Verify Deployment
+
+```bash
+# Check live site
+curl -s https://jazzy-pavlova-4566fa.netlify.app | head -20
+
+# Check local
+curl -s http://localhost:2337 | head -20
+```
+
+## Credentials
+
+No credentials needed for the blog itself. 
+Netlify deploy requires `NETLIFY_AUTH_TOKEN` + `NETLIFY_SITE_ID` in environment.
