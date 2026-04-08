@@ -21,7 +21,6 @@ export default function SocialDropdown() {
       <button 
         className="social-trigger" 
         onClick={() => setOpen(!open)}
-        onTouchEnd={(e) => { e.preventDefault(); setOpen(!open); }}
         aria-expanded={open}
         aria-label="Social links"
       >

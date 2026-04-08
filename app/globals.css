@@ -766,34 +766,25 @@ body {
 }
 
 .social-menu {
-  position: fixed;
-  top: auto;
-  bottom: 90px;
-  right: 24px;
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 12px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   padding: 8px;
-  min-width: 200px;
+  min-width: 180px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   display: none;
   flex-direction: column;
   gap: 4px;
-  z-index: 10000;
-  /* iOS Safari touch improvements */
-  -webkit-overflow-scrolling: touch;
+  z-index: 9999;
 }
 
 .social-trigger:focus + .social-menu,
 .social-menu:hover {
   display: flex;
-}
-
-/* Ensure button and menu are always tappable on iOS */
-.moltbook-float * {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .social-menu-item {
