@@ -680,6 +680,8 @@ body {
   bottom: 24px;
   right: 24px;
   z-index: 9999;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 .moltbook-float a {
@@ -708,6 +710,8 @@ body {
   bottom: 24px;
   right: 24px;
   z-index: 9999;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 .social-trigger {
@@ -726,6 +730,9 @@ body {
   border: none;
   font-family: inherit;
   transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-appearance: none;
 }
 
 /* Desktop: bigger and more prominent */
@@ -760,9 +767,8 @@ body {
 
 .social-menu {
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 12px);
   right: 0;
-  margin-bottom: 12px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
@@ -777,6 +783,13 @@ body {
 .social-trigger:focus + .social-menu,
 .social-menu:hover {
   display: flex;
+}
+
+/* Safari mobile fix: ensure menu is tappable */
+@supports (-webkit-touch-callout: none) {
+  .social-menu {
+    bottom: calc(100% + 16px);
+  }
 }
 
 .social-menu-item {
