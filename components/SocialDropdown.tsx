@@ -1,35 +1,38 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const lastTouchTime = useRef(0);
 
-  // Close on click outside (desktop)
+  // Close when clicking outside - but ignore if within 300ms of a touch (iOS Safari)
   useEffect(() => {
     if (!open) return;
-    
-    function handleOutsideClick(e: MouseEvent) {
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const timeSinceTouch = Date.now() - lastTouchTime.current;
+      if (timeSinceTouch < 300) {
+        // iOS Safari fires synthetic click on document after touchend
+        return;
+      }
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
-    }
-    
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [open]);
 
-  // Mobile: touchstart toggles immediately, preventDefault stops synthetic click
-  function handleTouchStart(e: React.TouchEvent) {
-    e.preventDefault(); // Prevent synthetic click on iOS
+  function handleClick(e: React.MouseEvent) {
+    e.stopPropagation();
     setOpen(prev => !prev);
   }
 
-  // Desktop: simple click
-  function handleClick(e: React.MouseEvent) {
-    // This only fires on real mouse click (synthetic touch→click already prevented)
-    setOpen(prev => !prev);
+  function handleTouchStart() {
+    lastTouchTime.current = Date.now();
   }
 
   return (
