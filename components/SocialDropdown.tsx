@@ -5,16 +5,15 @@ import { useState, useRef, useEffect } from 'react';
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const lastTouchTime = useRef(0);
+  const ignoreNextClick = useRef(false);
 
-  // Close when clicking outside - but ignore if within 300ms of a touch (iOS Safari)
+  // Close when clicking outside
   useEffect(() => {
     if (!open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      const timeSinceTouch = Date.now() - lastTouchTime.current;
-      if (timeSinceTouch < 300) {
-        // iOS Safari fires synthetic click on document after touchend
+      if (ignoreNextClick.current) {
+        ignoreNextClick.current = false;
         return;
       }
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -27,12 +26,17 @@ export default function SocialDropdown() {
   }, [open]);
 
   function handleClick(e: React.MouseEvent) {
-    e.stopPropagation();
+    if (ignoreNextClick.current) {
+      ignoreNextClick.current = false;
+      return;
+    }
     setOpen(prev => !prev);
   }
 
-  function handleTouchStart() {
-    lastTouchTime.current = Date.now();
+  function handleTouchEnd(e: React.TouchEvent) {
+    e.preventDefault(); // Prevent synthetic click
+    ignoreNextClick.current = true;
+    setOpen(prev => !prev);
   }
 
   return (
@@ -40,7 +44,7 @@ export default function SocialDropdown() {
       <button 
         className="social-trigger" 
         onClick={handleClick}
-        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         aria-expanded={open}
         aria-label="Social links"
       >
