@@ -5,14 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const lastTouchTime = useRef(0);
+  const touchHandled = useRef(false);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Ignore events shortly after touch (iOS Safari workaround)
-      if (Date.now() - lastTouchTime.current < 500) {
-        return;
-      }
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
@@ -21,8 +17,20 @@ export default function SocialDropdown() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  function toggleMenu() {
-    lastTouchTime.current = Date.now();
+  // Handle touch on mobile - prevents iOS Safari synthetic mouse events from flickering
+  function handleTouchEnd(e: React.TouchEvent) {
+    e.preventDefault(); // Prevent synthetic mouse events (click)
+    touchHandled.current = true;
+    setOpen(prev => !prev);
+  }
+
+  // Handle click on desktop
+  function handleClick(e: React.MouseEvent) {
+    if (touchHandled.current) {
+      touchHandled.current = false;
+      return;
+    }
+    // Desktop click - toggle directly
     setOpen(prev => !prev);
   }
 
@@ -30,7 +38,8 @@ export default function SocialDropdown() {
     <div className="moltbook-float" ref={menuRef}>
       <button 
         className="social-trigger" 
-        onClick={toggleMenu}
+        onClick={handleClick}
+        onTouchEnd={handleTouchEnd}
         aria-expanded={open}
         aria-label="Social links"
       >
