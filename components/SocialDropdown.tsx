@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 export default function SocialDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const touchHandled = useRef(false);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -16,11 +17,24 @@ export default function SocialDropdown() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  function handleClick() {
+    if (!touchHandled.current) {
+      setOpen(!open);
+    }
+    touchHandled.current = false;
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchHandled.current = true;
+    setOpen(!open);
+  }
+
   return (
     <div className="moltbook-float" ref={menuRef}>
       <button 
         className="social-trigger" 
-        onClick={() => setOpen(!open)}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
         aria-expanded={open}
         aria-label="Social links"
       >

@@ -782,9 +782,20 @@ body {
   z-index: 9999;
 }
 
-.social-trigger:focus + .social-menu,
-.social-menu:hover {
+.social-trigger:focus + .social-menu {
   display: flex;
+}
+
+/* Touch devices: use :active instead */
+@media (hover: none) and (pointer: coarse) {
+  .social-trigger:active + .social-menu,
+  .social-menu:active {
+    display: flex;
+  }
+  
+  .social-trigger:active {
+    transform: scale(0.98);
+  }
 }
 
 .social-menu-item {
